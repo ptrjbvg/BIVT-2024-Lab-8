@@ -1,45 +1,73 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+using System.Globalization;
 
-public class Blue_3 : Blue
+namespace Lab_8
 {
-    private (char, double)[] _output;
-    public (char, double)[] Output => _output ?? Array.Empty<(char, double)>();
-
-    public Blue_3(string input) : base(input)
+    public class Blue_3 : Blue
     {
-        _output = null;
-    }
+        private (char, double)[] _output = Array.Empty<(char, double)>();
+        public (char, double)[] Output => _output;
 
-    public override void Review()
-    {
-        var words = Regex.Matches(Input, @"\b[а-яёa-zA-Z'-]+\b", RegexOptions.IgnoreCase);
-        int total = words.Count;
+        public Blue_3(string input) : base(input) {}
 
-        var freq = new Dictionary<char, int>();
-
-        foreach (Match word in words)
+        public override void Review()
         {
-            if (word.Length == 0) continue;
-            char c = char.ToLower(word.Value[0]);
-            if (!char.IsLetter(c)) continue;
+            Dictionary<char, int> counts = new();
+            int total = 0;
+            string word = "";
 
-            if (!freq.ContainsKey(c))
-                freq[c] = 0;
-            freq[c]++;
+            foreach (char c in Input)
+            {
+                if (char.IsLetter(c) || c == '-' || c == '\'')
+                {
+                    word += c;
+                }
+                else
+                {
+                    if (word != "")
+                    {
+                        char first = char.ToLower(word[0]);
+                        if (char.IsLetter(first))
+                        {
+                            counts[first] = counts.GetValueOrDefault(first) + 1;
+                            total++;
+                        }
+                        word = "";
+                    }
+                }
+            }
+
+            if (word != "")
+            {
+                char first = char.ToLower(word[0]);
+                if (char.IsLetter(first))
+                {
+                    counts[first] = counts.GetValueOrDefault(first) + 1;
+                    total++;
+                }
+            }
+
+            var list = new List<(char, double)>();
+            foreach (var pair in counts)
+            {
+                double percent = 100.0 * pair.Value / total;
+                list.Add((pair.Key, percent));
+            }
+
+            list.Sort((a, b) =>
+            {
+                int cmp = b.Item2.CompareTo(a.Item2);
+                return cmp != 0 ? cmp : a.Item1.CompareTo(b.Item1);
+            });
+
+            _output = list.ToArray();
         }
 
-        _output = freq
-            .Select(pair => (pair.Key, Math.Round(100.0 * pair.Value / total, 4)))
-            .OrderByDescending(t => t.Item2)
-            .ThenBy(t => t.Item1)
-            .ToArray();
-    }
-
-    public override string ToString()
-    {
-        return string.Join("\n", Output.Select(t => $"{t.Item1} - {t.Item2}"));
+        public override string ToString()
+        {
+            return string.Join(Environment.NewLine, Array.ConvertAll(Output,
+                t => $"{t.Item1}-{t.Item2.ToString("0.###", CultureInfo.InvariantCulture)}"));
+        }
     }
 }
