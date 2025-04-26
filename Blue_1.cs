@@ -1,55 +1,58 @@
 using System;
 using System.Collections.Generic;
 
-public class Blue_1 : Blue
+namespace Lab_8
 {
-    private string[] _output = Array.Empty<string>();
-    public string[] Output => _output;
-
-    public Blue_1(string input) : base(input) {}
-
-    public override void Review()
+    public class Blue_1 : Blue
     {
-        var words = new List<string>();
-        var current = "";
+        private string[] _output = Array.Empty<string>();
+        public string[] Output => _output;
 
-        foreach (char c in Input)
+        public Blue_1(string input) : base(input) {}
+
+        public override void Review()
         {
-            if (char.IsWhiteSpace(c))
+            var words = new List<string>();
+            var current = "";
+
+            foreach (char c in Input)
             {
-                if (current != "") words.Add(current);
-                current = "";
+                if (char.IsWhiteSpace(c))
+                {
+                    if (current != "") words.Add(current);
+                    current = "";
+                }
+                else
+                {
+                    current += c;
+                }
             }
-            else
+
+            if (current != "") words.Add(current);
+
+            var lines = new List<string>();
+            string line = "";
+
+            foreach (var word in words)
             {
-                current += c;
+                if ((line + (line == "" ? "" : " ") + word).Length <= 50)
+                {
+                    line += (line == "" ? "" : " ") + word;
+                }
+                else
+                {
+                    lines.Add(line);
+                    line = word;
+                }
             }
+
+            if (line != "") lines.Add(line);
+            _output = lines.ToArray();
         }
 
-        if (current != "") words.Add(current);
-
-        var lines = new List<string>();
-        string line = "";
-
-        foreach (var word in words)
+        public override string ToString()
         {
-            if ((line + (line == "" ? "" : " ") + word).Length <= 50)
-            {
-                line += (line == "" ? "" : " ") + word;
-            }
-            else
-            {
-                lines.Add(line);
-                line = word;
-            }
+            return string.Join(Environment.NewLine, Output);
         }
-
-        if (line != "") lines.Add(line);
-        _output = lines.ToArray();
-    }
-
-    public override string ToString()
-    {
-        return string.Join(Environment.NewLine, Output);
     }
 }
