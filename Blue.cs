@@ -1,14 +1,17 @@
 using System;
 
-public abstract class Blue
+namespace Lab_8
 {
-    private string _input;
-    public string Input => _input;
-
-    protected Blue(string input)
+    public abstract class Blue
     {
-        _input = input;
-    }
+        private string _input;
+        public string Input => _input;
 
-    public abstract void Review();
+        protected Blue(string input)
+        {
+            _input = input ?? "";
+        }
+
+        public abstract void Review();
+    }
 }
