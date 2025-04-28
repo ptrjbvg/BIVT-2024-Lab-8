@@ -7,31 +7,34 @@ namespace Lab_8
     public class Blue_2 : Blue
     {
         private string _sequence;
-        private string _output = "";
+        private string? _output;
 
-        public string Output => _output;
+        public string? Output => _output;
 
         public Blue_2(string input, string sequence) : base(input)
         {
             _sequence = sequence ?? "";
+            _output = null;
         }
 
         public override void Review()
         {
             if (Input == null)
             {
-                _output = "";
+                _output = null;
                 return;
             }
 
             StringBuilder result = new StringBuilder();
             StringBuilder word = new StringBuilder();
+            bool lastCharWasLetter = false;
 
             foreach (char c in Input)
             {
                 if (char.IsLetter(c) || c == '-' || c == '\'')
                 {
                     word.Append(c);
+                    lastCharWasLetter = true;
                 }
                 else
                 {
@@ -45,6 +48,7 @@ namespace Lab_8
                         word.Clear();
                     }
                     result.Append(c);
+                    lastCharWasLetter = false;
                 }
             }
 
@@ -87,7 +91,7 @@ namespace Lab_8
 
         public override string ToString()
         {
-            return Output;
+            return Output ?? "";
         }
     }
 }
