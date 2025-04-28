@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Lab_8
@@ -27,18 +26,18 @@ namespace Lab_8
 
             StringBuilder result = new StringBuilder();
             StringBuilder word = new StringBuilder();
-            bool lastCharWasLetter = false;
+            bool insideWord = false;
 
             foreach (char c in Input)
             {
                 if (char.IsLetter(c) || c == '-' || c == '\'')
                 {
                     word.Append(c);
-                    lastCharWasLetter = true;
+                    insideWord = true;
                 }
                 else
                 {
-                    if (word.Length > 0)
+                    if (insideWord)
                     {
                         string currentWord = word.ToString();
                         if (!currentWord.Contains(_sequence, StringComparison.OrdinalIgnoreCase))
@@ -46,9 +45,9 @@ namespace Lab_8
                             result.Append(currentWord);
                         }
                         word.Clear();
+                        insideWord = false;
                     }
                     result.Append(c);
-                    lastCharWasLetter = false;
                 }
             }
 
@@ -61,16 +60,18 @@ namespace Lab_8
                 }
             }
 
-            _output = CleanSpaces(result.ToString());
+            _output = CleanSpacesAndPunctuation(result.ToString());
         }
 
-        private string CleanSpaces(string text)
+        private string CleanSpacesAndPunctuation(string text)
         {
             StringBuilder cleaned = new StringBuilder();
             bool lastWasSpace = false;
 
-            foreach (char c in text)
+            for (int i = 0; i < text.Length; i++)
             {
+                char c = text[i];
+
                 if (char.IsWhiteSpace(c))
                 {
                     if (!lastWasSpace)
@@ -81,12 +82,22 @@ namespace Lab_8
                 }
                 else
                 {
+                    if (IsPunctuation(c) && cleaned.Length > 0 && cleaned[^1] == ' ')
+                    {
+                        cleaned.Length--;
+                    }
+
                     cleaned.Append(c);
                     lastWasSpace = false;
                 }
             }
 
             return cleaned.ToString().Trim();
+        }
+
+        private bool IsPunctuation(char c)
+        {
+            return c == '.' || c == ',' || c == ';' || c == ':' || c == '?' || c == '!' || c == '–' || c == '—' || c == '"';
         }
 
         public override string ToString()
