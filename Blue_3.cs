@@ -6,8 +6,8 @@ namespace Lab_8
 {
     public class Blue_3 : Blue
     {
-        private (char, double)[] _output = Array.Empty<(char, double)>();
-        public (char, double)[] Output => _output;
+        private (char, double)[]? _output = null;
+        public (char, double)[]? Output => _output;
 
         public Blue_3(string input) : base(input) {}
 
@@ -25,27 +25,17 @@ namespace Lab_8
                 }
                 else
                 {
-                    if (word != "")
-                    {
-                        char first = char.ToLower(word[0]);
-                        if (char.IsLetter(first))
-                        {
-                            counts[first] = counts.GetValueOrDefault(first) + 1;
-                            total++;
-                        }
-                        word = "";
-                    }
+                    ProcessWord(word, counts, ref total);
+                    word = "";
                 }
             }
 
-            if (word != "")
+            ProcessWord(word, counts, ref total);
+
+            if (total == 0)
             {
-                char first = char.ToLower(word[0]);
-                if (char.IsLetter(first))
-                {
-                    counts[first] = counts.GetValueOrDefault(first) + 1;
-                    total++;
-                }
+                _output = null;
+                return;
             }
 
             var list = new List<(char, double)>();
@@ -64,10 +54,26 @@ namespace Lab_8
             _output = list.ToArray();
         }
 
+        private void ProcessWord(string word, Dictionary<char, int> counts, ref int total)
+        {
+            if (!string.IsNullOrEmpty(word))
+            {
+                char first = char.ToLower(word[0]);
+                if (char.IsLetter(first))
+                {
+                    counts[first] = counts.GetValueOrDefault(first) + 1;
+                    total++;
+                }
+            }
+        }
+
         public override string ToString()
         {
-            return string.Join(Environment.NewLine, Array.ConvertAll(Output,
-                t => $"{t.Item1}-{t.Item2.ToString("0.###", CultureInfo.InvariantCulture)}"));
+            if (_output == null) return string.Empty;
+
+            var culture = new CultureInfo("ru-RU");
+            return string.Join(Environment.NewLine, Array.ConvertAll(_output,
+                t => $"{t.Item1} - {t.Item2.ToString("0.####", culture)}"));
         }
     }
 }
