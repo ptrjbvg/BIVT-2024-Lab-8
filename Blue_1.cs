@@ -12,7 +12,7 @@ namespace Lab_8
 
         public override void Review()
         {
-            if (Input == null)
+            if (string.IsNullOrEmpty(Input))
             {
                 _output = null;
                 return;
@@ -41,20 +41,29 @@ namespace Lab_8
 
             foreach (var word in words)
             {
-                if ((line + (line == "" ? "" : " ") + word).Length <= 50)
+                if (word.Length > 50)
+                {
+                    if (line != "") 
+                    {
+                        lines.Add(line);
+                        line = "";
+                    }
+                    lines.Add(word);
+                }
+                else if ((line.Length == 0 ? 0 : line.Length + 1) + word.Length <= 50)
                 {
                     line += (line == "" ? "" : " ") + word;
                 }
                 else
                 {
-                    lines.Add(line);
+                    if (line != "") lines.Add(line);
                     line = word;
                 }
             }
 
             if (line != "") lines.Add(line);
 
-            _output = lines.ToArray();
+            _output = lines.Count > 0 ? lines.ToArray() : null;
         }
 
         public override string ToString()
