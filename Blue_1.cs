@@ -5,13 +5,19 @@ namespace Lab_8
 {
     public class Blue_1 : Blue
     {
-        private string[] _output = Array.Empty<string>();
-        public string[] Output => _output;
+        private string[]? _output;
+        public string[]? Output => _output;
 
         public Blue_1(string input) : base(input) {}
 
         public override void Review()
         {
+            if (Input == null)
+            {
+                _output = null;
+                return;
+            }
+
             var words = new List<string>();
             var current = "";
 
@@ -47,12 +53,13 @@ namespace Lab_8
             }
 
             if (line != "") lines.Add(line);
+
             _output = lines.ToArray();
         }
 
         public override string ToString()
         {
-            return string.Join(Environment.NewLine, Output);
+            return _output == null ? "" : string.Join(Environment.NewLine, _output);
         }
     }
 }
