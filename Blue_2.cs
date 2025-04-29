@@ -27,9 +27,18 @@ namespace Lab_8
             StringBuilder result = new StringBuilder();
             StringBuilder word = new StringBuilder();
             bool insideWord = false;
+            bool insideQuotes = false;
+            bool lastWasDeleted = false;
 
             foreach (char c in Input)
             {
+                if (c == '"')
+                {
+                    result.Append(c);
+                    insideQuotes = !insideQuotes;
+                    continue;
+                }
+
                 if (char.IsLetter(c) || c == '-' || c == '\'')
                 {
                     word.Append(c);
@@ -43,11 +52,31 @@ namespace Lab_8
                         if (!currentWord.Contains(_sequence, StringComparison.OrdinalIgnoreCase))
                         {
                             result.Append(currentWord);
+                            lastWasDeleted = false;
+                        }
+                        else
+                        {
+                            lastWasDeleted = true;
                         }
                         word.Clear();
                         insideWord = false;
                     }
-                    result.Append(c);
+
+                    if (IsPunctuation(c))
+                    {
+                        result.Append(c);
+                    }
+                    else if (char.IsWhiteSpace(c))
+                    {
+                        if (!lastWasDeleted && result.Length > 0 && result[^1] != ' ')
+                        {
+                            result.Append(' ');
+                        }
+                    }
+                    else
+                    {
+                        result.Append(c);
+                    }
                 }
             }
 
@@ -60,18 +89,16 @@ namespace Lab_8
                 }
             }
 
-            _output = CleanSpacesAndPunctuation(result.ToString());
+            _output = CleanSpaces(result.ToString());
         }
 
-        private string CleanSpacesAndPunctuation(string text)
+        private string CleanSpaces(string text)
         {
             StringBuilder cleaned = new StringBuilder();
             bool lastWasSpace = false;
 
-            for (int i = 0; i < text.Length; i++)
+            foreach (char c in text)
             {
-                char c = text[i];
-
                 if (char.IsWhiteSpace(c))
                 {
                     if (!lastWasSpace)
@@ -82,11 +109,6 @@ namespace Lab_8
                 }
                 else
                 {
-                    if (IsPunctuation(c) && cleaned.Length > 0 && cleaned[^1] == ' ')
-                    {
-                        cleaned.Length--;
-                    }
-
                     cleaned.Append(c);
                     lastWasSpace = false;
                 }
@@ -97,7 +119,7 @@ namespace Lab_8
 
         private bool IsPunctuation(char c)
         {
-            return c == '.' || c == ',' || c == ';' || c == ':' || c == '?' || c == '!' || c == '–' || c == '—' || c == '"';
+            return char.IsPunctuation(c) && c != '"';
         }
 
         public override string ToString()
