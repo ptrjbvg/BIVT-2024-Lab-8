@@ -1,79 +1,62 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Lab_8
 {
     public class Blue_3 : Blue
     {
-        private (char, double)[]? _output = null;
-        public (char, double)[]? Output => _output;
+        private (char Letter, double Percentage)[] _output;
 
-        public Blue_3(string input) : base(input) {}
+        public (char Letter, double Percentage)[] Output => _output?.ToArray();
+
+        public Blue_3(string input) : base(input)
+        {
+            _output = null;
+        }
 
         public override void Review()
         {
-            Dictionary<char, int> counts = new();
-            int total = 0;
-            string word = "";
-
-            foreach (char c in Input)
+            if (string.IsNullOrWhiteSpace(Input))
             {
-                if (char.IsLetter(c) || c == '-' || c == '\'')
-                {
-                    word += c;
-                }
-                else
-                {
-                    ProcessWord(word, counts, ref total);
-                    word = "";
-                }
-            }
-
-            ProcessWord(word, counts, ref total);
-
-            if (total == 0)
-            {
-                _output = null;
+                _output = Array.Empty<(char, double)>();
                 return;
             }
 
-            var list = new List<(char, double)>();
-            foreach (var pair in counts)
+            char[] separators = { ' ', '.', '!', '?', ',', ':', '\"', ';', '–', '(', ')', '[', ']', '{', '}', '/' };
+
+            var words = Input
+                .Split(separators, StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length > 0 && char.IsLetter(w[0]))
+                .Select(w => char.ToLower(w[0]))
+                .ToList();
+
+            if (words.Count == 0)
             {
-                double percent = 100.0 * pair.Value / total;
-                list.Add((pair.Key, percent));
+                _output = Array.Empty<(char, double)>();
+                return;
             }
 
-            list.Sort((a, b) =>
-            {
-                int cmp = b.Item2.CompareTo(a.Item2);
-                return cmp != 0 ? cmp : a.Item1.CompareTo(b.Item1);
-            });
+            var grouped = words
+                .GroupBy(c => c)
+                .Select(g => (Letter: g.Key, Percentage: Math.Round(g.Count() * 100.0 / words.Count, 4)))
+                .OrderByDescending(item => item.Percentage)
+                .ThenBy(item => item.Letter)
+                .ToArray();
 
-            _output = list.ToArray();
-        }
-
-        private void ProcessWord(string word, Dictionary<char, int> counts, ref int total)
-        {
-            if (!string.IsNullOrEmpty(word))
-            {
-                char first = char.ToLower(word[0]);
-                if (char.IsLetter(first))
-                {
-                    counts[first] = counts.GetValueOrDefault(first) + 1;
-                    total++;
-                }
-            }
+            _output = grouped;
         }
 
         public override string ToString()
         {
-            if (_output == null) return string.Empty;
+            if (_output == null || _output.Length == 0)
+                return string.Empty;
 
-            var culture = new CultureInfo("ru-RU");
-            return string.Join(Environment.NewLine, Array.ConvertAll(_output,
-                t => $"{t.Item1} - {t.Item2.ToString("0.####", culture)}"));
+            return string.Join(Environment.NewLine,
+                _output.Select(s =>
+                    $"{s.Letter} - {s.Percentage:F4}".Replace('.', ',')
+                ));
         }
     }
 }
