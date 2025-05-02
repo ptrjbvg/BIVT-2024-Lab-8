@@ -34,6 +34,21 @@ namespace Lab_8
             {
                 if (c == '"')
                 {
+                    if (insideWord)
+                    {
+                        string currentWord = word.ToString();
+                        if (!currentWord.Contains(_sequence, StringComparison.OrdinalIgnoreCase))
+                        {
+                            result.Append(currentWord);
+                            lastWasDeleted = false;
+                        }
+                        else
+                        {
+                            lastWasDeleted = true;
+                        }
+                        word.Clear();
+                        insideWord = false;
+                    }
                     result.Append(c);
                     insideQuotes = !insideQuotes;
                     continue;
