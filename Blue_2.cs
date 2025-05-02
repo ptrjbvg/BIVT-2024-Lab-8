@@ -18,7 +18,7 @@ namespace Lab_8
 
         public override void Review()
         {
-            if (Input == null)
+            if (string.IsNullOrEmpty(Input))
             {
                 _output = null;
                 return;
@@ -89,7 +89,7 @@ namespace Lab_8
                 }
             }
 
-            _output = CleanSpaces(result.ToString());
+            _output = CleanSpaces(result.ToString().Trim());
         }
 
         private string CleanSpaces(string text)
