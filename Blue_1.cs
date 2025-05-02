@@ -68,7 +68,7 @@ namespace Lab_8
 
         public override string ToString()
         {
-            return _output == null ? "" : string.Join(Environment.NewLine, _output);
+            return _output == null ? "" : string.Join(Environment.NewLine, _output.ToArray());
         }
     }
 }
