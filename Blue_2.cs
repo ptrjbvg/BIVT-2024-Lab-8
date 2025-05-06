@@ -20,14 +20,21 @@ namespace Lab_8
 
         public override void Review()
         {
+            if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(_tool))
+            {
+                _output = string.Empty;
+                return;
+            }
+
             StringBuilder result = new StringBuilder();
             StringBuilder word = new StringBuilder();
             bool insideWord = false;
-            bool lastWasDeleted = false;
 
-            foreach (char c in Input)
+            for (int i = 0; i < Input.Length; i++)
             {
-                if (Char.IsLetterOrDigit(c) || c == '-' || c == '\'')
+                char c = Input[i];
+
+                if (char.IsLetterOrDigit(c) || c == '-' || c == '\'')
                 {
                     word.Append(c);
                     insideWord = true;
@@ -36,35 +43,30 @@ namespace Lab_8
                 {
                     if (insideWord)
                     {
-                        if (!word.ToString().Contains(_tool))
+                        string w = word.ToString();
+                        if (!w.Contains(_tool))
                         {
-                            result.Append(word.ToString());
-                        }
-                        else
-                        {
-                            lastWasDeleted = true;
+                            result.Append(w);
                         }
                         word.Clear();
                         insideWord = false;
                     }
 
-                    if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
-                    {
-                        if (lastWasDeleted && Char.IsWhiteSpace(c) && result.Length > 0 && result[result.Length - 1] != ' ')
-                        {
-                            result.Append(" "); 
-                        }
-                        result.Append(c);
-                    }
+                    result.Append(c);
                 }
             }
 
-            if (insideWord && !word.ToString().Contains(_tool))
+            
+            if (insideWord)
             {
-                result.Append(word.ToString());
+                string w = word.ToString();
+                if (!w.Contains(_tool))
+                {
+                    result.Append(w);
+                }
             }
 
-            _output = CleanSpaces(result.ToString().Trim());
+            _output = CleanSpaces(result.ToString());
         }
 
         private string CleanSpaces(string text)
@@ -74,7 +76,7 @@ namespace Lab_8
 
             foreach (char c in text)
             {
-                if (Char.IsWhiteSpace(c))
+                if (char.IsWhiteSpace(c))
                 {
                     if (!lastWasSpace)
                     {
