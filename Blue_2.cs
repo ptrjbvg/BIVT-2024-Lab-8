@@ -5,56 +5,29 @@ namespace Lab_8
 {
     public class Blue_2 : Blue
     {
-        private string _sequence;
-        private string? _output;
+        private string _output;
+        private string _tool;
 
-        public string? Output => _output;
+        public string Output => _output;
 
-        public Blue_2(string input, string sequence) : base(input)
+        public string Tool => _tool;
+
+        public Blue_2(string input, string tool) : base(input)
         {
-            _sequence = sequence ?? "";
-            _output = null;
+            _output = "";
+            _tool = tool;
         }
 
         public override void Review()
         {
-            if (string.IsNullOrEmpty(Input))
-            {
-                _output = null;
-                return;
-            }
-
             StringBuilder result = new StringBuilder();
             StringBuilder word = new StringBuilder();
             bool insideWord = false;
-            bool insideQuotes = false;
             bool lastWasDeleted = false;
 
             foreach (char c in Input)
             {
-                if (c == '"')
-                {
-                    if (insideWord)
-                    {
-                        string currentWord = word.ToString();
-                        if (!currentWord.Contains(_sequence, StringComparison.OrdinalIgnoreCase))
-                        {
-                            result.Append(currentWord);
-                            lastWasDeleted = false;
-                        }
-                        else
-                        {
-                            lastWasDeleted = true;
-                        }
-                        word.Clear();
-                        insideWord = false;
-                    }
-                    result.Append(c);
-                    insideQuotes = !insideQuotes;
-                    continue;
-                }
-
-                if (char.IsLetter(c) || c == '-' || c == '\'')
+                if (Char.IsLetterOrDigit(c) || c == '-' || c == '\'')
                 {
                     word.Append(c);
                     insideWord = true;
@@ -63,11 +36,9 @@ namespace Lab_8
                 {
                     if (insideWord)
                     {
-                        string currentWord = word.ToString();
-                        if (!currentWord.Contains(_sequence, StringComparison.OrdinalIgnoreCase))
+                        if (!word.ToString().Contains(_tool))
                         {
-                            result.Append(currentWord);
-                            lastWasDeleted = false;
+                            result.Append(word.ToString());
                         }
                         else
                         {
@@ -77,31 +48,20 @@ namespace Lab_8
                         insideWord = false;
                     }
 
-                    if (IsPunctuation(c))
+                    if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
                     {
-                        result.Append(c);
-                    }
-                    else if (char.IsWhiteSpace(c))
-                    {
-                        if (!lastWasDeleted && result.Length > 0 && result[^1] != ' ')
+                        if (lastWasDeleted && Char.IsWhiteSpace(c) && result.Length > 0 && result[result.Length - 1] != ' ')
                         {
-                            result.Append(' ');
+                            result.Append(" "); // Добавляем пробел, если предыдущий был удален
                         }
-                    }
-                    else
-                    {
                         result.Append(c);
                     }
                 }
             }
 
-            if (word.Length > 0)
+            if (insideWord && !word.ToString().Contains(_tool))
             {
-                string currentWord = word.ToString();
-                if (!currentWord.Contains(_sequence, StringComparison.OrdinalIgnoreCase))
-                {
-                    result.Append(currentWord);
-                }
+                result.Append(word.ToString());
             }
 
             _output = CleanSpaces(result.ToString().Trim());
@@ -114,7 +74,7 @@ namespace Lab_8
 
             foreach (char c in text)
             {
-                if (char.IsWhiteSpace(c))
+                if (Char.IsWhiteSpace(c))
                 {
                     if (!lastWasSpace)
                     {
@@ -132,14 +92,9 @@ namespace Lab_8
             return cleaned.ToString().Trim();
         }
 
-        private bool IsPunctuation(char c)
-        {
-            return char.IsPunctuation(c) && c != '"';
-        }
-
         public override string ToString()
         {
-            return Output ?? "";
+            return _output;
         }
     }
 }
