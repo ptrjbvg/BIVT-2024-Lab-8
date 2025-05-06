@@ -52,7 +52,7 @@ namespace Lab_8
                     {
                         if (lastWasDeleted && Char.IsWhiteSpace(c) && result.Length > 0 && result[result.Length - 1] != ' ')
                         {
-                            result.Append(" "); // Добавляем пробел, если предыдущий был удален
+                            result.Append(" "); 
                         }
                         result.Append(c);
                     }
