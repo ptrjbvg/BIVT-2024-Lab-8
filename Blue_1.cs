@@ -6,69 +6,94 @@ namespace Lab_8
     public class Blue_1 : Blue
     {
         private string[]? _output;
-        public string[]? Output => _output;
+        
+        public string[]? Output
+        {
+            get
+            {
+                if (_output == null) return null;
+                string[] copy = new string[_output.Length];
+                Array.Copy(_output, copy, _output.Length);
+                return copy;
+            }
+        }
 
         public Blue_1(string input) : base(input) {}
 
         public override void Review()
         {
-            if (string.IsNullOrEmpty(Input))
+            if (string.IsNullOrWhiteSpace(Input))
             {
                 _output = null;
                 return;
             }
 
             var words = new List<string>();
-            var current = "";
+            var currentWord = "";
 
             foreach (char c in Input)
             {
                 if (char.IsWhiteSpace(c))
                 {
-                    if (current != "") words.Add(current);
-                    current = "";
+                    if (currentWord != "")
+                    {
+                        words.Add(currentWord);
+                        currentWord = "";
+                    }
                 }
                 else
                 {
-                    current += c;
+                    currentWord += c;
                 }
             }
 
-            if (current != "") words.Add(current);
+            if (currentWord != "")
+            {
+                words.Add(currentWord);
+            }
 
             var lines = new List<string>();
-            string line = "";
+            string currentLine = "";
 
             foreach (var word in words)
             {
                 if (word.Length > 50)
                 {
-                    if (line != "") 
+                    if (currentLine != "")
                     {
-                        lines.Add(line);
-                        line = "";
+                        lines.Add(currentLine);
+                        currentLine = "";
                     }
                     lines.Add(word);
                 }
-                else if ((line.Length == 0 ? 0 : line.Length + 1) + word.Length <= 50)
-                {
-                    line += (line == "" ? "" : " ") + word;
-                }
                 else
                 {
-                    if (line != "") lines.Add(line);
-                    line = word;
+                    if (currentLine.Length + (currentLine == "" ? 0 : 1) + word.Length <= 50)
+                    {
+                        currentLine += (currentLine == "" ? "" : " ") + word;
+                    }
+                    else
+                    {
+                        if (currentLine != "")
+                        {
+                            lines.Add(currentLine);
+                        }
+                        currentLine = word;
+                    }
                 }
             }
 
-            if (line != "") lines.Add(line);
+            if (currentLine != "")
+            {
+                lines.Add(currentLine);
+            }
 
             _output = lines.Count > 0 ? lines.ToArray() : null;
         }
 
         public override string ToString()
         {
-            return _output == null ? "" : string.Join(Environment.NewLine, _output.ToArray());
+            return _output == null ? "" : string.Join(Environment.NewLine, _output);
         }
     }
 }
