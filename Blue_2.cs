@@ -9,20 +9,19 @@ namespace Lab_8
         private string _tool;
 
         public string Output => _output;
-
         private string Tool => _tool;
 
         public Blue_2(string input, string tool) : base(input)
         {
-            _tool = tool;
             _output = null;
+            _tool = tool;
         }
 
         public override void Review()
         {
             if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(_tool))
             {
-                _output = string.Empty;
+                _output = null;
                 return;
             }
 
@@ -89,12 +88,18 @@ namespace Lab_8
                 }
             }
 
-            return cleaned.ToString().Trim();
+            string result = cleaned.ToString();
+            result = result.Replace(" ,", ",")
+                           .Replace(" .", ".")
+                           .Replace(" ;", ";")
+                           .Replace(" -", "-");
+
+            return result.Trim();
         }
 
         public override string ToString()
         {
-            return _output;
+            return string.IsNullOrEmpty(_output) ? string.Empty : _output;
         }
     }
 }
