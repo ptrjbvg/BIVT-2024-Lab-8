@@ -10,12 +10,12 @@ namespace Lab_8
 
         public string Output => _output;
 
-        public string Tool => _tool;
+        private string Tool => _tool;
 
         public Blue_2(string input, string tool) : base(input)
         {
-            _output = "";
             _tool = tool;
+            _output = null;
         }
 
         public override void Review()
@@ -51,12 +51,10 @@ namespace Lab_8
                         word.Clear();
                         insideWord = false;
                     }
-
                     result.Append(c);
                 }
             }
 
-            
             if (insideWord)
             {
                 string w = word.ToString();
